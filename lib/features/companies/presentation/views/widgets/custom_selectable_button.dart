@@ -1,0 +1,37 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_task/core/theme/app_color.dart';
+import 'package:link_task/core/theme/app_text_styles.dart';
+
+class CustomSelectableButton extends StatelessWidget {
+  const CustomSelectableButton({
+    super.key,
+    required this.text,
+    required this.isSelected,
+  });
+  final String text;
+  final bool isSelected;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(minWidth: 148.w),
+      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 24.w),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? AppColor.primaryColor.withAlpha(46)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: isSelected
+              ? AppColor.greenBorderColor
+              : AppColor.greyBorderColor,
+        ),
+      ),
+      child: Text(
+        text,
+        textAlign: .center,
+        style: AppTextStyle.styleMedium14.copyWith(color: AppColor.textColor),
+      ),
+    );
+  }
+}
