@@ -10,4 +10,6 @@ class AppColor {
   static const redColor = Color(0xffEF2D28);
   static const greyBorderColor = Color(0xffB8B8B8);
   static const greenBorderColor = Color(0xff4E6D40);
+  static const searchFillColor = Color(0xffE0E0E0);
+  static const bodyTextColor = Color(0xff3B3B3B);
 }

@@ -44,4 +44,8 @@ abstract class AppTextStyle {
     fontSize: 16.sp,
     fontWeight: FontWeight.w700,
   );
+  static TextStyle styleBold14 = GoogleFonts.cairo(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w700,
+  );
 }
