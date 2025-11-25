@@ -41,6 +41,7 @@ dependencies:
     sdk: flutter
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.2.3
+  get_it: ^9.1.0
   google_fonts: ^6.3.2
   skeletonizer: ^2.1.0+1
 
