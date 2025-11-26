@@ -8,29 +8,34 @@ class CustomSelectableButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.isSelected,
+    this.onTap,
   });
   final String text;
   final bool isSelected;
+  final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(minWidth: 148.w),
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 24.w),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? AppColor.primaryColor.withAlpha(46)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        constraints: BoxConstraints(minWidth: 148.w),
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 24.w),
+        decoration: BoxDecoration(
           color: isSelected
-              ? AppColor.greenBorderColor
-              : AppColor.greyBorderColor,
+              ? AppColor.primaryColor.withAlpha(46)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: isSelected
+                ? AppColor.greenBorderColor
+                : AppColor.greyBorderColor,
+          ),
         ),
-      ),
-      child: Text(
-        text,
-        textAlign: .center,
-        style: AppTextStyle.styleMedium14.copyWith(color: AppColor.textColor),
+        child: Text(
+          text,
+          textAlign: .center,
+          style: AppTextStyle.styleMedium14.copyWith(color: AppColor.textColor),
+        ),
       ),
     );
   }
