@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_task/core/utils/app_bloc_observer.dart';
+import 'package:link_task/core/utils/service_locator.dart';
+import 'package:link_task/features/companies/presentation/manager/cubit/companies_cubit.dart';
 import 'package:link_task/features/companies/presentation/views/home_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  setupServiceLocator();
+  Bloc.observer = AppBlocObserver();
   runApp(const MyApp());
 }
 
@@ -25,7 +32,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: child,
       ),
-      child: const HomeView(),
+      child: BlocProvider(
+        create: (context) => sl<CompaniesCubit>()..initialize(),
+        child: const HomeView(),
+      ),
     );
   }
 }
