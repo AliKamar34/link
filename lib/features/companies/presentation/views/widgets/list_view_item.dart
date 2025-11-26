@@ -5,12 +5,20 @@ import 'package:flutter_svg/svg.dart';
 import 'package:link_task/core/constants/app_assets.dart';
 import 'package:link_task/core/theme/app_color.dart';
 import 'package:link_task/core/theme/app_text_styles.dart';
+import 'package:link_task/features/companies/domain/entities/company.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ListViewItem extends StatelessWidget {
-  const ListViewItem({super.key, required this.makeFav, required this.icon});
+  const ListViewItem({
+    super.key,
+    required this.makeFav,
+    required this.icon,
+    required this.company,
+  });
 
   final void Function()? makeFav;
   final String icon;
+  final Company company;
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +29,22 @@ class ListViewItem extends StatelessWidget {
         child: CachedNetworkImage(
           height: 85.h,
           width: 110.w,
-          imageUrl:
-              'https://olivedrab-manatee-515331.hostingersite.com/storage/companies/3.png',
-          errorWidget: (context, url, error) => SizedBox(height: 100),
+          imageUrl: company.img,
+          placeholder: (context, url) => Skeletonizer(
+            child: Image.asset(AppAssets.noImage, height: 85.h, width: 110.w),
+          ),
+          errorWidget: (context, url, error) => Image.asset(
+            AppAssets.noImage,
+            fit: BoxFit.cover,
+            height: 85.h,
+            width: 110.w,
+          ),
         ),
       ),
       title: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
-          Text('شركة التميز للديكور', style: AppTextStyle.styleRegular12),
+          Text(company.name, style: AppTextStyle.styleRegular12),
           CircleAvatar(
             backgroundColor: AppColor.lightGreyColor,
             radius: 12.r,
@@ -39,29 +54,40 @@ class ListViewItem extends StatelessWidget {
       ),
       subtitle: Column(
         children: [
-          Text(
-            'خلافاَ للإعتقاد السائد فإن لوريم إيبسوم ليس نصاَ عشوائياً، بل إن له جذور في الأدب اللاتيني',
-            style: AppTextStyle.styleRegular8,
-          ),
+          Text(company.desc, style: AppTextStyle.styleRegular8),
           Row(
             spacing: 16,
             children: [
-              Row(
-                children: List.generate(5, (index) {
-                  return Icon(Icons.star, color: Colors.amber, size: 12.sp);
-                }),
-              ),
+              buildStars(double.parse(company.avgRates)),
               Row(
                 spacing: 8,
                 children: [
                   SvgPicture.asset(AppAssets.mapPinIcon),
-                  Text('الرياض', style: AppTextStyle.styleMedium10),
+                  Text(company.location, style: AppTextStyle.styleMedium10),
                 ],
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildStars(double rating) {
+    int fullStars = rating.floor();
+    bool hasHalfStar = (rating - fullStars) >= 0.5;
+    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return Row(
+      children: [
+        ...List.generate(fullStars, (index) {
+          return Icon(Icons.star, color: Colors.amber, size: 12);
+        }),
+        if (hasHalfStar) Icon(Icons.star_half, color: Colors.amber, size: 12),
+        ...List.generate(emptyStars, (index) {
+          return Icon(Icons.star_border, color: Colors.grey, size: 12);
+        }),
+      ],
     );
   }
 }
