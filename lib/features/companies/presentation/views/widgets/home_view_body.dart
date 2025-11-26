@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:link_task/features/companies/domain/entities/company.dart';
 import 'package:link_task/features/companies/presentation/views/widgets/custom_grid_view.dart';
 import 'package:link_task/features/companies/presentation/views/widgets/custom_list_view.dart';
-import 'package:link_task/features/companies/presentation/views/widgets/custom_loading_widget.dart';
 
 class HomeViewBody extends StatefulWidget {
   const HomeViewBody({
@@ -43,7 +43,12 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   }
 
   void _onScroll() {
-    if (_isBottom &&
+    FocusManager.instance.primaryFocus?.unfocus();
+    final isScrollingDown =
+        _scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse;
+    if (isScrollingDown &&
+        _isBottom &&
         (widget.hasMore ?? false) &&
         !(widget.isLoadingMore ?? false)) {
       widget.onLoadMore?.call();
@@ -54,12 +59,11 @@ class _HomeViewBodyState extends State<HomeViewBody> {
     if (!_scrollController.hasClients) return false;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.offset;
-    return currentScroll >= (maxScroll * 0.7);
+    return currentScroll >= (maxScroll * 0.9);
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool showLoader = widget.isLoadingMore ?? false;
     return Padding(
       padding: const .symmetric(horizontal: 16),
       child: Column(
@@ -67,6 +71,8 @@ class _HomeViewBodyState extends State<HomeViewBody> {
           widget.isGrid
               ? Expanded(
                   child: CustomGridView(
+                    isLoadingMore: widget.isLoadingMore ?? false,
+
                     companies: widget.companies,
                     scrollController: _scrollController,
                     onToggleFavorite: widget.onToggleFavorite,
@@ -74,13 +80,12 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                 )
               : Expanded(
                   child: CustomListView(
+                    isLoadingMore: widget.isLoadingMore ?? false,
                     companies: widget.companies,
                     scrollController: _scrollController,
                     onToggleFavorite: widget.onToggleFavorite,
                   ),
                 ),
-
-          if (showLoader) CustomLoadingWidget(isGrid: widget.isGrid),
         ],
       ),
     );
