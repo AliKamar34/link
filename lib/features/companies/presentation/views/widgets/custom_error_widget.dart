@@ -34,7 +34,11 @@ class CustomErrorWidget extends StatelessWidget {
             SizedBox(height: 24),
             SizedBox(
               width: 150.w,
-              child: CustomButton(title: 'إعادة المحاولة', onPressed: onRetry),
+              child: CustomButton(
+                borderRadius: 55.r,
+                title: 'البحث مجددًا',
+                onPressed: onRetry,
+              ),
             ),
           ],
         ],

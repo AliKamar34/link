@@ -8,21 +8,24 @@ class CategoriesSection extends StatelessWidget {
     super.key,
     required this.categories,
     required this.onSelect,
+    this.initialSelectedIds,
   });
+
   final List<Subcategory> categories;
   final Function(List<int>) onSelect;
+  final List<int>? initialSelectedIds;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       spacing: 16,
-      crossAxisAlignment: .start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('الخدمات', style: AppTextStyle.styleMedium16),
         CategorySelector(
           categories: categories,
-          onSelect: (selectedIDS) {
-            onSelect(selectedIDS);
-          },
+          initialSelectedIds: initialSelectedIds,
+          onSelect: onSelect,
         ),
       ],
     );

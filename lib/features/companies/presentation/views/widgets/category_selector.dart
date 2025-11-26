@@ -7,37 +7,46 @@ class CategorySelector extends StatefulWidget {
     super.key,
     required this.categories,
     required this.onSelect,
+    this.initialSelectedIds,
   });
+
   final List<Subcategory> categories;
   final Function(List<int>) onSelect;
+  final List<int>? initialSelectedIds;
 
   @override
   State<CategorySelector> createState() => _CategorySelectorState();
 }
 
 class _CategorySelectorState extends State<CategorySelector> {
-  List<int> selectedIds = [];
+  late List<int> selectedIds;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIds = widget.initialSelectedIds ?? [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
       children: List.generate(widget.categories.length, (index) {
+        final category = widget.categories[index];
         return CustomSelectableButton(
           onTap: () {
             setState(() {
-              int id = widget.categories[index].id;
-
-              if (selectedIds.contains(id)) {
-                selectedIds.remove(id);
+              if (selectedIds.contains(category.id)) {
+                selectedIds.remove(category.id);
               } else {
-                selectedIds.add(id);
+                selectedIds.add(category.id);
               }
             });
             widget.onSelect(selectedIds);
           },
-          text: widget.categories[index].name,
-          isSelected: selectedIds.contains(widget.categories[index].id),
+          text: category.name,
+          isSelected: selectedIds.contains(category.id),
         );
       }),
     );

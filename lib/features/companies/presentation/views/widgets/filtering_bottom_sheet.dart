@@ -16,11 +16,29 @@ class FilteringBottomSheet extends StatefulWidget {
 }
 
 class _FilteringBottomSheetState extends State<FilteringBottomSheet> {
-  List<int> selectedSubCategoryIds = [];
-  int? selectedCityId;
-  String? selectedType;
+  late List<int> selectedSubCategoryIds;
+  late int? selectedCityId;
+  late String? selectedType;
+
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<CompaniesCubit>().state;
+    if (state is CompaniesLoaded) {
+      selectedSubCategoryIds = state.currentSubCategoryIds ?? [];
+      selectedCityId = state.currentCityId;
+      selectedType = state.currentType;
+    } else {
+      selectedSubCategoryIds = [];
+      selectedCityId = null;
+      selectedType = null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<CompaniesCubit>();
+
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.75,
@@ -30,10 +48,10 @@ class _FilteringBottomSheetState extends State<FilteringBottomSheet> {
         return SingleChildScrollView(
           controller: controller,
           child: Padding(
-            padding: const .symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               spacing: 32,
-              crossAxisAlignment: .start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   children: [
@@ -41,7 +59,7 @@ class _FilteringBottomSheetState extends State<FilteringBottomSheet> {
                       child: Container(
                         width: 80,
                         height: 5,
-                        margin: EdgeInsets.only(top: 16, bottom: 20),
+                        margin: const EdgeInsets.only(top: 16, bottom: 20),
                         decoration: BoxDecoration(
                           color: AppColor.darkGreyColor,
                           borderRadius: BorderRadius.circular(10),
@@ -49,12 +67,18 @@ class _FilteringBottomSheetState extends State<FilteringBottomSheet> {
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: .spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('تصنيف حسب', style: AppTextStyle.styleBold16),
                         InkWell(
                           onTap: () {
-                            context.read<CompaniesCubit>().clearFilters();
+                            setState(() {
+                              selectedSubCategoryIds = [];
+                              selectedCityId = null;
+                              selectedType = null;
+                            });
+                            cubit.clearFilters();
+                            Navigator.pop(context);
                           },
                           child: Text(
                             'مسح الكل',
@@ -68,34 +92,45 @@ class _FilteringBottomSheetState extends State<FilteringBottomSheet> {
                   ],
                 ),
                 PersonSection(
+                  initialType: selectedType,
                   onSelect: (type) {
-                    selectedType = type;
+                    setState(() {
+                      selectedType = type;
+                    });
                   },
                 ),
                 CategoriesSection(
-                  onSelect: (selectedIDS) {
-                    selectedSubCategoryIds = selectedIDS;
+                  initialSelectedIds: selectedSubCategoryIds,
+                  onSelect: (selectedIDs) {
+                    setState(() {
+                      selectedSubCategoryIds = selectedIDs;
+                    });
                   },
-                  categories: context.read<CompaniesCubit>().subCategoriesList,
+                  categories: cubit.subCategoriesList,
                 ),
                 CitySection(
+                  initialValue: selectedCityId?.toString(),
                   onChanged: (value) {
-                    selectedCityId = value == null ? null : int.parse(value);
+                    setState(() {
+                      selectedCityId = value == null ? null : int.parse(value);
+                    });
                   },
-                  cities: context.read<CompaniesCubit>().citiesList,
+                  cities: cubit.citiesList,
                 ),
                 CustomButton(
                   title: 'تطبيق',
                   onPressed: () {
-                    context.read<CompaniesCubit>().applyFilters(
+                    cubit.applyFilters(
                       cityId: selectedCityId,
                       type: selectedType,
-                      subCategoryIds: selectedSubCategoryIds,
+                      subCategoryIds: selectedSubCategoryIds.isEmpty
+                          ? null
+                          : selectedSubCategoryIds,
                     );
                     Navigator.pop(context);
                   },
                 ),
-                SizedBox(),
+                const SizedBox(),
               ],
             ),
           ),
