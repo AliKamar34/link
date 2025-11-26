@@ -28,7 +28,7 @@ class CustomSelectableButton extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? AppColor.greenBorderColor
-                : AppColor.greyBorderColor,
+                : AppColor.searchBorderColor,
           ),
         ),
         child: Text(

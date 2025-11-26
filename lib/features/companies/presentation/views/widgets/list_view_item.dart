@@ -25,34 +25,28 @@ class ListViewItem extends StatelessWidget {
     return ListTile(
       contentPadding: .zero,
       leading: ClipRRect(
-        borderRadius: .circular(4),
-        child: CachedNetworkImage(
-          height: 85.h,
-          width: 110.w,
-          imageUrl: company.img,
-          placeholder: (context, url) => Skeletonizer(
-            child: Image.asset(AppAssets.noImage, height: 85.h, width: 110.w),
-          ),
-          errorWidget: (context, url, error) => Image.asset(
-            AppAssets.noImage,
-            fit: BoxFit.cover,
-            height: 85.h,
-            width: 110.w,
+        borderRadius: .circular(4.r),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(end: 8),
+          child: CachedNetworkImage(
+            height: 100.h,
+            width: 100.w,
+            imageUrl: company.img,
+            placeholder: (context, url) => Skeletonizer(
+              child: Image.asset(AppAssets.noImage, height: 100, width: 100),
+            ),
+            errorWidget: (context, url, error) => Image.asset(
+              AppAssets.noImage,
+              fit: BoxFit.cover,
+              height: 100.h,
+              width: 100.w,
+            ),
           ),
         ),
       ),
-      title: Row(
-        mainAxisAlignment: .spaceBetween,
-        children: [
-          Text(company.name, style: AppTextStyle.styleRegular12),
-          CircleAvatar(
-            backgroundColor: AppColor.lightGreyColor,
-            radius: 12.r,
-            child: InkWell(onTap: makeFav, child: SvgPicture.asset(icon)),
-          ),
-        ],
-      ),
+      title: Text(company.name, style: AppTextStyle.styleRegular12),
       subtitle: Column(
+        spacing: 4,
         children: [
           Text(company.desc, style: AppTextStyle.styleRegular8),
           Row(
@@ -67,6 +61,16 @@ class ListViewItem extends StatelessWidget {
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+      trailing: Column(
+        mainAxisAlignment: .start,
+        children: [
+          CircleAvatar(
+            backgroundColor: AppColor.lightGreyColor,
+            radius: 12.r,
+            child: InkWell(onTap: makeFav, child: SvgPicture.asset(icon)),
           ),
         ],
       ),

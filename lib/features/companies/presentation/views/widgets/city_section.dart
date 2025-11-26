@@ -27,7 +27,10 @@ class CitySection extends StatelessWidget {
           items: cities.map((city) {
             return DropdownMenuItem(
               value: city.id.toString(),
-              child: Text(city.name, style: AppTextStyle.styleRegular12),
+              child: Padding(
+                padding: const .symmetric(vertical: 16),
+                child: Text(city.name, style: AppTextStyle.styleRegular12),
+              ),
             );
           }).toList(),
         ),

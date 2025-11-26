@@ -28,7 +28,7 @@ class CustomGridView extends StatelessWidget {
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
-        childAspectRatio: 0.95,
+        childAspectRatio: 0.9,
       ),
       itemBuilder: (context, index) {
         if (index == companies.length) {

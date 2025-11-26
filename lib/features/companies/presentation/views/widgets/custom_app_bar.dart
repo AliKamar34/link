@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:link_task/core/theme/app_color.dart';
 import 'package:link_task/core/theme/app_text_styles.dart';
@@ -12,7 +13,7 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 84,
+      height: 100.h,
       decoration: BoxDecoration(
         color: AppColor.appBarColor,
         borderRadius: BorderRadiusDirectional.only(

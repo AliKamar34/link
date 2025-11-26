@@ -24,11 +24,10 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       onChanged: onChanged,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      cursorColor: AppColor.greyBorderColor,
+      cursorColor: AppColor.searchBorderColor,
       decoration: InputDecoration(
         filled: true,
-        fillColor: AppColor.searchFillColor,
-        errorMaxLines: 2,
+        fillColor: AppColor.textFeildColor,
         border: borderBuilder(context),
         enabledBorder: borderBuilder(context),
         focusedBorder: borderBuilder(context),
@@ -39,7 +38,7 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: Padding(padding: EdgeInsets.all(16.w), child: prefixIcon),
         prefixIconConstraints: const BoxConstraints(),
         suffixIconConstraints: const BoxConstraints(),
-        contentPadding: EdgeInsets.symmetric(vertical: 12.w),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.h),
       ),
     );
   }
@@ -48,7 +47,7 @@ class CustomTextField extends StatelessWidget {
     return OutlineInputBorder(
       gapPadding: 18.w,
       borderRadius: BorderRadius.circular(30.r),
-      borderSide: BorderSide(color: AppColor.greyBorderColor),
+      borderSide: BorderSide(color: AppColor.searchBorderColor),
     );
   }
 }

@@ -27,26 +27,26 @@ class GridViewItem extends StatelessWidget {
         ClipRRect(
           borderRadius: .circular(4),
           child: CachedNetworkImage(
-            height: 94.h,
+            height: 100.h,
+            width: 163.w,
             imageUrl: company.img,
             placeholder: (context, url) => Skeletonizer(
               child: Image.asset(AppAssets.noImage, height: 85.h, width: 110.w),
             ),
-            errorWidget: (context, url, error) => Image.asset(
-              AppAssets.noImage,
-              fit: BoxFit.cover,
-              height: 85.h,
-              width: 110.w,
-            ),
+            errorWidget: (context, url, error) =>
+                Image.asset(AppAssets.noImage, fit: BoxFit.fitWidth),
           ),
         ),
-        SizedBox(height: 7),
         ListTile(
           contentPadding: .zero,
           title: Row(
             mainAxisAlignment: .spaceBetween,
+            children: [Text(company.name, style: AppTextStyle.styleMedium12)],
+          ),
+          subtitle: Text(company.desc, style: AppTextStyle.styleRegular8),
+          trailing: Column(
+            mainAxisAlignment: .start,
             children: [
-              Text(company.name, style: AppTextStyle.styleMedium12),
               CircleAvatar(
                 backgroundColor: AppColor.lightGreyColor,
                 radius: 12.r,
@@ -54,7 +54,6 @@ class GridViewItem extends StatelessWidget {
               ),
             ],
           ),
-          subtitle: Text(company.desc, style: AppTextStyle.styleRegular8),
         ),
       ],
     );
