@@ -1,38 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:link_task/core/constants/app_assets.dart';
 import 'package:link_task/features/companies/domain/entities/company.dart';
 import 'package:link_task/features/companies/presentation/views/widgets/custom_grid_view.dart';
 import 'package:link_task/features/companies/presentation/views/widgets/custom_list_view.dart';
+import 'package:link_task/features/companies/presentation/views/widgets/custom_loading_widget.dart';
 
-class HomeViewBody extends StatelessWidget {
+class HomeViewBody extends StatefulWidget {
   const HomeViewBody({
     super.key,
     required this.isGrid,
-    required this.isFav,
-    this.makeFav,
     required this.companies,
+    this.hasMore,
+    this.isLoadingMore,
+    this.onLoadMore,
+    this.onToggleFavorite,
   });
 
   final bool isGrid;
-  final bool isFav;
-  final void Function()? makeFav;
   final List<Company> companies;
+  final bool? hasMore;
+  final bool? isLoadingMore;
+  final VoidCallback? onLoadMore;
+  final Function(int)? onToggleFavorite;
+
+  @override
+  State<HomeViewBody> createState() => _HomeViewBodyState();
+}
+
+class _HomeViewBodyState extends State<HomeViewBody> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom &&
+        (widget.hasMore ?? false) &&
+        !(widget.isLoadingMore ?? false)) {
+      widget.onLoadMore?.call();
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.7);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bool showLoader = widget.isLoadingMore ?? false;
     return Padding(
       padding: const .symmetric(horizontal: 16),
-      child: isGrid
-          ? CustomGridView(
-              companies: companies,
-              makeFav: makeFav,
-              icon: isFav ? AppAssets.redFavIcon : AppAssets.heartIcon,
-            )
-          : CustomListView(
-              companies: companies,
-              makeFav: makeFav,
-              icon: isFav ? AppAssets.redFavIcon : AppAssets.heartIcon,
-            ),
+      child: Column(
+        children: [
+          widget.isGrid
+              ? Expanded(
+                  child: CustomGridView(
+                    companies: widget.companies,
+                    scrollController: _scrollController,
+                    onToggleFavorite: widget.onToggleFavorite,
+                  ),
+                )
+              : Expanded(
+                  child: CustomListView(
+                    companies: widget.companies,
+                    scrollController: _scrollController,
+                    onToggleFavorite: widget.onToggleFavorite,
+                  ),
+                ),
+
+          if (showLoader) CustomLoadingWidget(isGrid: widget.isGrid),
+        ],
+      ),
     );
   }
 }
