@@ -8,8 +8,21 @@ import 'package:link_task/features/companies/presentation/manager/cubit/companie
 import 'package:link_task/features/companies/presentation/views/widgets/custom_text_field.dart';
 import 'package:link_task/features/companies/presentation/views/widgets/filtering_bottom_sheet.dart';
 
-class FilteringSearchWidget extends StatelessWidget {
+class FilteringSearchWidget extends StatefulWidget {
   const FilteringSearchWidget({super.key});
+
+  @override
+  State<FilteringSearchWidget> createState() => _FilteringSearchWidgetState();
+}
+
+class _FilteringSearchWidgetState extends State<FilteringSearchWidget> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +35,16 @@ class FilteringSearchWidget extends StatelessWidget {
             child: CustomTextField(
               hint: 'ابحث هنا عن فرد او شركة',
               prefixIcon: SvgPicture.asset(AppAssets.searchIcon),
+              controller: _searchController,
+              onChanged: (value) {
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (_searchController.text == value) {
+                    if (context.mounted) {
+                      context.read<CompaniesCubit>().search(value);
+                    }
+                  }
+                });
+              },
             ),
           ),
           InkWell(
