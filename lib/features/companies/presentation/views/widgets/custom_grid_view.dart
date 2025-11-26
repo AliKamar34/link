@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:link_task/core/constants/app_assets.dart';
 import 'package:link_task/features/companies/domain/entities/company.dart';
 import 'package:link_task/features/companies/presentation/views/widgets/grid_view_item.dart';
 
 class CustomGridView extends StatelessWidget {
   const CustomGridView({
     super.key,
-    this.makeFav,
-    required this.icon,
     required this.companies,
+    this.scrollController,
+    this.onToggleFavorite,
   });
-  final void Function()? makeFav;
-  final String icon;
+  final ScrollController? scrollController;
+  final Function(int)? onToggleFavorite;
   final List<Company> companies;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      controller: scrollController,
       itemCount: companies.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -26,8 +28,10 @@ class CustomGridView extends StatelessWidget {
       itemBuilder: (context, index) {
         return GridViewItem(
           company: companies[index],
-          makeFav: makeFav,
-          icon: icon,
+          icon: companies[index].fav
+              ? AppAssets.redFavIcon
+              : AppAssets.heartIcon,
+          makeFav: () => onToggleFavorite?.call(companies[index].id),
         );
       },
     );
