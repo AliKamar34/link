@@ -10,14 +10,17 @@ class CustomDropDownButton<T> extends StatelessWidget {
     required this.items,
     this.onChanged,
     required this.hint,
+    this.initialValue,
   });
   final String? Function(T?)? validator;
   final List<DropdownMenuItem<T>> items;
   final void Function(T?)? onChanged;
   final String hint;
+  final T? initialValue;
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
+      initialValue: initialValue,
       hint: Text(hint, style: AppTextStyle.styleRegular10),
       validator: validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
