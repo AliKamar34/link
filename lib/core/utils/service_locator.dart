@@ -6,6 +6,7 @@ import 'package:link_task/features/companies/domain/repo/companies_repo.dart';
 import 'package:link_task/features/companies/domain/usecases/filter_companies_use_case.dart';
 import 'package:link_task/features/companies/domain/usecases/get_cities_use_case.dart';
 import 'package:link_task/features/companies/domain/usecases/get_subcategories_use_case.dart';
+import 'package:link_task/features/companies/presentation/manager/cubit/companies_cubit.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -25,4 +26,13 @@ void setupServiceLocator() {
   sl.registerLazySingleton(() => GetCitiesUseCase(sl()));
   sl.registerLazySingleton(() => GetSubcategoriesUseCase(sl()));
   sl.registerLazySingleton(() => FilterCompaniesUseCase(sl()));
+
+  // Cubit
+  sl.registerFactory(
+    () => CompaniesCubit(
+      getCitiesUseCase: sl(),
+      filterCompaniesUseCase: sl(),
+      getSubcategoriesUseCase: sl(),
+    ),
+  );
 }

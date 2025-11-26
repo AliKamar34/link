@@ -14,6 +14,7 @@ class DioHelper {
         receiveDataWhenStatusError: true,
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
+        headers: {'Accept-Language': 'ar'},
       ),
     )..interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
   }
