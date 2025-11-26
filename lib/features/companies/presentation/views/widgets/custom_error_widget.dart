@@ -13,35 +13,55 @@ class CustomErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        mainAxisAlignment: .center,
-        children: [
-          Icon(Icons.error_outline, size: 100.sp, color: AppColor.redColor),
-          SizedBox(height: 24),
-          Text(
-            'حدث خطأ',
-            style: AppTextStyle.styleBold16.copyWith(color: AppColor.textColor),
-          ),
-          SizedBox(height: 12),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: AppTextStyle.styleRegular12.copyWith(
-              color: AppColor.darkGreyColor,
-            ),
-          ),
-          if (onRetry != null) ...[
-            SizedBox(height: 24),
-            SizedBox(
-              width: 150.w,
-              child: CustomButton(
-                borderRadius: 55.r,
-                title: 'البحث مجددًا',
-                onPressed: onRetry,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 100.sp,
+                      color: AppColor.redColor,
+                    ),
+                    SizedBox(height: 24),
+                    Text(
+                      'حدث خطأ',
+                      style: AppTextStyle.styleBold16.copyWith(
+                        color: AppColor.textColor,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyle.styleRegular12.copyWith(
+                        color: AppColor.darkGreyColor,
+                      ),
+                    ),
+                    if (onRetry != null) ...[
+                      SizedBox(height: 24),
+                      SizedBox(
+                        width: 150.w,
+                        child: CustomButton(
+                          borderRadius: 55.r,
+                          title: 'البحث مجددًا',
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            onRetry?.call();
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
-          ],
-        ],
+          );
+        },
       ),
     );
   }

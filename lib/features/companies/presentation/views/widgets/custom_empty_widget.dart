@@ -14,40 +14,52 @@ class CustomEmptyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: .center,
-        crossAxisAlignment: .center,
-        children: [
-          SvgPicture.asset(AppAssets.noResultImage),
-          Column(
-            spacing: 6,
-            children: [
-              Text(
-                'عذرًا، لم نعثر على نتائج!',
-                style: AppTextStyle.styleMedium14.copyWith(
-                  color: AppColor.textColor,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  spacing: 16,
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .center,
+                  children: [
+                    SvgPicture.asset(AppAssets.noResultImage),
+                    Column(
+                      spacing: 6,
+                      children: [
+                        Text(
+                          'عذرًا، لم نعثر على نتائج!',
+                          style: AppTextStyle.styleMedium14.copyWith(
+                            color: AppColor.textColor,
+                          ),
+                        ),
+                        Text(
+                          'من فضلك حاول مجددًا باستخدام جمل بحث أخري',
+                          style: AppTextStyle.styleRegular12.copyWith(
+                            color: AppColor.bodyTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: 150.w,
+                      child: CustomButton(
+                        borderRadius: 55.r,
+                        title: 'البحث مجددًا',
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          context.read<CompaniesCubit>().initialize();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                'من فضلك حاول مجددًا باستخدام جمل بحث أخري',
-                style: AppTextStyle.styleRegular12.copyWith(
-                  color: AppColor.bodyTextColor,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: 150.w,
-            child: CustomButton(
-              borderRadius: 55.r,
-              title: 'البحث مجددًا',
-              onPressed: () {
-                context.read<CompaniesCubit>().initialize();
-              },
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
