@@ -7,9 +7,10 @@ import 'package:link_task/features/companies/presentation/manager/cubit/companie
 import 'package:link_task/features/companies/presentation/views/home_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
+  await ScreenUtil.ensureScreenSize();
   Bloc.observer = AppBlocObserver();
   runApp(const MyApp());
 }
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
-      child: MaterialApp(
+      builder: (context, child) => MaterialApp(
         locale: Locale('ar'),
         supportedLocales: [Locale('ar'), Locale('en')],
         localizationsDelegates: [
