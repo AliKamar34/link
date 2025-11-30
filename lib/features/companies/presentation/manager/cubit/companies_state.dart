@@ -11,13 +11,13 @@ final class CompaniesInitial extends CompaniesState {}
 
 class CompaniesLoading extends CompaniesState {}
 
-class CompaniesLoadingMore extends CompaniesState {
-  final List<Company> currentCompanies;
+class CompaniesPageLoading extends CompaniesState {
+  final CompaniesLoaded previousState;
 
-  const CompaniesLoadingMore(this.currentCompanies);
+  const CompaniesPageLoading(this.previousState);
 
   @override
-  List<Object?> get props => [currentCompanies];
+  List<Object?> get props => [previousState];
 }
 
 class CompaniesLoaded extends CompaniesState {

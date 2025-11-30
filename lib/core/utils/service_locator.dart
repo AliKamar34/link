@@ -1,5 +1,7 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:link_task/core/networking/dio_helper.dart';
+import 'package:link_task/core/networking/network_info.dart';
 import 'package:link_task/features/companies/data/datasource/remote_data_source.dart';
 import 'package:link_task/features/companies/data/repo/companies_repo_impl.dart';
 import 'package:link_task/features/companies/domain/repo/companies_repo.dart';
@@ -11,6 +13,12 @@ import 'package:link_task/features/companies/presentation/manager/cubit/companie
 final GetIt sl = GetIt.instance;
 
 void setupServiceLocator() {
+  // External
+  sl.registerLazySingleton(() => Connectivity());
+
+  // Network Info
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+
   // DioHelper
   sl.registerLazySingleton(() => DioHelper());
 
@@ -33,6 +41,7 @@ void setupServiceLocator() {
       getCitiesUseCase: sl(),
       filterCompaniesUseCase: sl(),
       getSubcategoriesUseCase: sl(),
+      networkInfo: sl(),
     ),
   );
 }

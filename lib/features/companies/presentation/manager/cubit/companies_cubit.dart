@@ -1,187 +1,6 @@
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:equatable/equatable.dart';
-// import 'package:link_task/core/usecases/use_cases.dart';
-// import 'package:link_task/features/companies/domain/entities/city.dart';
-// import 'package:link_task/features/companies/domain/entities/company.dart';
-// import 'package:link_task/features/companies/domain/entities/pagination.dart';
-// import 'package:link_task/features/companies/domain/entities/sub_category.dart';
-// import 'package:link_task/features/companies/domain/usecases/filter_companies_use_case.dart';
-// import 'package:link_task/features/companies/domain/usecases/get_cities_use_case.dart';
-// import 'package:link_task/features/companies/domain/usecases/get_subcategories_use_case.dart';
-
-// part 'companies_state.dart';
-
-// class CompaniesCubit extends Cubit<CompaniesState> {
-//   CompaniesCubit({
-//     required this.getCitiesUseCase,
-//     required this.filterCompaniesUseCase,
-//     required this.getSubcategoriesUseCase,
-//   }) : super(CompaniesInitial());
-
-//   final GetCitiesUseCase getCitiesUseCase;
-//   final FilterCompaniesUseCase filterCompaniesUseCase;
-//   final GetSubcategoriesUseCase getSubcategoriesUseCase;
-
-//   List<City> citiesList = [];
-//   List<Subcategory> subCategoriesList = [];
-//   final Set<int> favIds = {};
-
-//   Future<void> loadFiltersData() async {
-//     final citiesResult = await getCitiesUseCase(NoParams());
-//     citiesResult.fold((failure) => null, (cities) => citiesList = cities);
-
-//     final subcategoriesResult = await getSubcategoriesUseCase(NoParams());
-//     subcategoriesResult.fold(
-//       (failure) => null,
-//       (subcategories) => subCategoriesList = subcategories,
-//     );
-//   }
-
-//   Future<void> initialize() async {
-//     emit(CompaniesLoading());
-//     await loadFiltersData();
-//     await loadCompanies();
-//   }
-
-//   Future<void> loadCompanies({
-//     String? search,
-//     String? type,
-//     int? cityId,
-//     List<int>? subCategoryIds,
-//     int page = 1,
-//   }) async {
-//     if (page == 1) {
-//       emit(CompaniesLoading());
-//     }
-
-//     final params = FilterCompaniesParams(
-//       search: search,
-//       type: type,
-//       cityId: cityId,
-//       subCategoryIds: subCategoryIds,
-//       page: page,
-//     );
-
-//     final result = await filterCompaniesUseCase(params);
-
-//     result.fold((failure) => emit(CompaniesError(failure.message)), (data) {
-//       final companies = data.$1;
-//       final pagination = data.$2;
-
-//       final updatedCompanies = companies.map((company) {
-//         return company.copyWith(fav: favIds.contains(company.id));
-//       }).toList();
-
-//       if (updatedCompanies.isEmpty) {
-//         emit(
-//           CompaniesEmpty(cities: citiesList, subcategories: subCategoriesList),
-//         );
-//       } else {
-//         emit(
-//           CompaniesLoaded(
-//             companies: updatedCompanies,
-//             pagination: pagination,
-//             cities: citiesList,
-//             subcategories: subCategoriesList,
-//             currentSearch: search,
-//             currentType: type,
-//             currentCityId: cityId,
-//             currentSubCategoryIds: subCategoryIds,
-//           ),
-//         );
-//       }
-//     });
-//   }
-
-//   Future<void> loadMore() async {
-//     final currentState = state;
-//     if (currentState is! CompaniesLoaded) return;
-//     if (!currentState.pagination.hasNextPage) return;
-
-//     emit(CompaniesLoadingMore(currentState.companies));
-
-//     final params = FilterCompaniesParams(
-//       search: currentState.currentSearch,
-//       type: currentState.currentType,
-//       cityId: currentState.currentCityId,
-//       subCategoryIds: currentState.currentSubCategoryIds,
-//       page: currentState.pagination.currentPage + 1,
-//     );
-
-//     final result = await filterCompaniesUseCase(params);
-
-//     result.fold((failure) => emit(CompaniesError(failure.message)), (data) {
-//       final newCompanies = data.$1;
-//       final pagination = data.$2;
-
-//       final updatedNewCompanies = newCompanies.map((company) {
-//         return company.copyWith(fav: favIds.contains(company.id));
-//       }).toList();
-
-//       final allCompanies = [...currentState.companies, ...updatedNewCompanies];
-
-//       emit(
-//         currentState.copyWith(companies: allCompanies, pagination: pagination),
-//       );
-//     });
-//   }
-
-//   Future<void> applyFilters({
-//     String? search,
-//     String? type,
-//     int? cityId,
-//     List<int>? subCategoryIds,
-//   }) async {
-//     await loadCompanies(
-//       search: search,
-//       type: type,
-//       cityId: cityId,
-//       subCategoryIds: subCategoryIds,
-//       page: 1,
-//     );
-//   }
-
-//   Future<void> search(String query) async {
-//     final currentState = state;
-//     if (currentState is CompaniesLoaded) {
-//       await loadCompanies(
-//         search: query.isEmpty ? null : query,
-//         type: currentState.currentType,
-//         cityId: currentState.currentCityId,
-//         subCategoryIds: currentState.currentSubCategoryIds,
-//         page: 1,
-//       );
-//     } else {
-//       await loadCompanies(search: query.isEmpty ? null : query);
-//     }
-//   }
-
-//   void toggleFavorite(int companyId) {
-//     if (favIds.contains(companyId)) {
-//       favIds.remove(companyId);
-//     } else {
-//       favIds.add(companyId);
-//     }
-
-//     final currentState = state;
-//     if (currentState is CompaniesLoaded) {
-//       final updatedCompanies = currentState.companies.map((company) {
-//         if (company.id == companyId) {
-//           return company.copyWith(fav: !company.fav);
-//         }
-//         return company;
-//       }).toList();
-
-//       emit(currentState.copyWith(companies: updatedCompanies));
-//     }
-//   }
-
-//   Future<void> clearFilters() async {
-//     await loadCompanies(page: 1);
-//   }
-// }
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:link_task/core/networking/network_info.dart';
 import 'package:link_task/core/usecases/use_cases.dart';
 import 'package:link_task/features/companies/domain/entities/city.dart';
 import 'package:link_task/features/companies/domain/entities/company.dart';
@@ -198,15 +17,16 @@ class CompaniesCubit extends Cubit<CompaniesState> {
     required this.getCitiesUseCase,
     required this.filterCompaniesUseCase,
     required this.getSubcategoriesUseCase,
+    required this.networkInfo,
   }) : super(CompaniesInitial());
 
   final GetCitiesUseCase getCitiesUseCase;
   final FilterCompaniesUseCase filterCompaniesUseCase;
   final GetSubcategoriesUseCase getSubcategoriesUseCase;
+  final NetworkInfo networkInfo;
 
   List<City> citiesList = [];
   List<Subcategory> subCategoriesList = [];
-  final Set<int> favIds = {};
 
   String? _currentSearch;
   String? _currentType;
@@ -214,6 +34,11 @@ class CompaniesCubit extends Cubit<CompaniesState> {
   List<int>? _currentSubCategoryIds;
 
   Future<void> loadFiltersData() async {
+    if (!await networkInfo.isConnected) {
+      emit(CompaniesError('لا يوجد اتصال بالإنترنت'));
+      return;
+    }
+
     final citiesResult = await getCitiesUseCase(NoParams());
     citiesResult.fold((failure) => null, (cities) => citiesList = cities);
 
@@ -237,6 +62,11 @@ class CompaniesCubit extends Cubit<CompaniesState> {
     List<int>? subCategoryIds,
     int page = 1,
   }) async {
+    if (!await networkInfo.isConnected) {
+      emit(CompaniesError('لا يوجد اتصال بالإنترنت'));
+      return;
+    }
+
     if (page == 1) {
       emit(CompaniesLoading());
       _currentSearch = search;
@@ -259,18 +89,14 @@ class CompaniesCubit extends Cubit<CompaniesState> {
       final companies = data.$1;
       final pagination = data.$2;
 
-      final updatedCompanies = companies.map((company) {
-        return company.copyWith(fav: favIds.contains(company.id));
-      }).toList();
-
-      if (updatedCompanies.isEmpty) {
+      if (companies.isEmpty) {
         emit(
           CompaniesEmpty(cities: citiesList, subcategories: subCategoriesList),
         );
       } else {
         emit(
           CompaniesLoaded(
-            companies: updatedCompanies,
+            companies: companies,
             pagination: pagination,
             cities: citiesList,
             subcategories: subCategoriesList,
@@ -284,49 +110,48 @@ class CompaniesCubit extends Cubit<CompaniesState> {
     });
   }
 
-  Future<void> loadMore() async {
-    final currentState = state;
-    if (currentState is! CompaniesLoaded) return;
-    if (!currentState.pagination.hasNextPage) return;
-
-    emit(CompaniesLoadingMore(currentState.companies));
-
-    final params = FilterCompaniesParams(
-      search: currentState.currentSearch,
-      type: currentState.currentType,
-      cityId: currentState.currentCityId,
-      subCategoryIds: currentState.currentSubCategoryIds,
-      page: currentState.pagination.currentPage + 1,
-    );
-
-    final result = await filterCompaniesUseCase(params);
-
-    result.fold(
-      (failure) {
-        // Return to loaded state with current companies on error
+  Future<void> goToPage(int page) async {
+    try {
+      final currentState = state;
+      if (currentState is! CompaniesLoaded) return;
+      if (!await networkInfo.isConnected) {
+        emit(CompaniesError('لا يوجد اتصال بالإنترنت'));
+        return;
+      }
+      emit(CompaniesPageLoading(currentState));
+      final params = FilterCompaniesParams(
+        search: currentState.currentSearch,
+        type: currentState.currentType,
+        cityId: currentState.currentCityId,
+        subCategoryIds: currentState.currentSubCategoryIds,
+        page: page,
+      );
+      final result = await filterCompaniesUseCase(params);
+      result.fold(
+        (failure) {
+          emit(currentState);
+          emit(CompaniesError(failure.message));
+        },
+        (data) {
+          final companies = data.$1;
+          final pagination = data.$2;
+          if (companies.isEmpty && page > 1) {
+            emit(currentState);
+            emit(CompaniesError('لا توجد بيانات في هذه الصفحة'));
+            return;
+          }
+          emit(
+            currentState.copyWith(companies: companies, pagination: pagination),
+          );
+        },
+      );
+    } catch (e) {
+      final currentState = state;
+      if (currentState is CompaniesLoaded) {
         emit(currentState);
-      },
-      (data) {
-        final newCompanies = data.$1;
-        final pagination = data.$2;
-
-        final updatedNewCompanies = newCompanies.map((company) {
-          return company.copyWith(fav: favIds.contains(company.id));
-        }).toList();
-
-        final allCompanies = [
-          ...currentState.companies,
-          ...updatedNewCompanies,
-        ];
-
-        emit(
-          currentState.copyWith(
-            companies: allCompanies,
-            pagination: pagination,
-          ),
-        );
-      },
-    );
+      }
+      emit(CompaniesError('حدث خطأ: ${e.toString()}'));
+    }
   }
 
   Future<void> applyFilters({
@@ -352,26 +177,6 @@ class CompaniesCubit extends Cubit<CompaniesState> {
       subCategoryIds: _currentSubCategoryIds,
       page: 1,
     );
-  }
-
-  void toggleFavorite(int companyId) {
-    if (favIds.contains(companyId)) {
-      favIds.remove(companyId);
-    } else {
-      favIds.add(companyId);
-    }
-
-    final currentState = state;
-    if (currentState is CompaniesLoaded) {
-      final updatedCompanies = currentState.companies.map((company) {
-        if (company.id == companyId) {
-          return company.copyWith(fav: !company.fav);
-        }
-        return company;
-      }).toList();
-
-      emit(currentState.copyWith(companies: updatedCompanies));
-    }
   }
 
   Future<void> clearFilters() async {
