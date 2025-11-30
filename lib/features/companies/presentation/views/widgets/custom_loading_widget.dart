@@ -13,6 +13,7 @@ class CustomLoadingWidget extends StatelessWidget {
     return Expanded(
       child: Skeletonizer(
         child: HomeViewBody(
+          isGrid: isGrid,
           companies: List.generate(
             6,
             (index) => Company(
@@ -27,9 +28,6 @@ class CustomLoadingWidget extends StatelessWidget {
               location: 'location',
             ),
           ),
-          isGrid: isGrid,
-          hasMore: false,
-          isLoadingMore: false,
         ),
       ),
     );
