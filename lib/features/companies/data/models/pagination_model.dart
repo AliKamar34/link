@@ -9,11 +9,16 @@ class PaginationModel extends Pagination {
   });
 
   factory PaginationModel.fromJson(Map<String, dynamic> json) {
+    final currentPage = json['current_page'] as int? ?? 1;
+    final lastPage = json['last_page'] as int? ?? 1;
+    final total = json['total'] as int? ?? 0;
+    final nextPageUrl = json['next_page_url'];
+
     return PaginationModel(
-      currentPage: json['current_page'] as int,
-      lastPage: json['last_page'] as int,
-      total: json['total'] as int,
-      hasNextPage: json['next_page_url'] != null,
+      currentPage: currentPage,
+      lastPage: lastPage,
+      total: total,
+      hasNextPage: nextPageUrl != null && currentPage < lastPage,
     );
   }
 }

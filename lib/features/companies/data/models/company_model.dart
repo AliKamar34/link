@@ -15,14 +15,14 @@ class CompanyModel extends Company {
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      type: json['type'] as String,
-      img: json['img'] as String,
-      desc: json['desc'] as String,
-      avgRates: json['avg_rates'] as String,
-      fav: json['fav'] as bool,
-      location: json['location'] as String,
+      id: json['id'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
+      type: json['type'] as String? ?? '',
+      img: json['img'] as String? ?? '',
+      desc: json['desc'] as String? ?? '',
+      avgRates: (json['avg_rates'] ?? '0').toString(),
+      fav: json['fav'] as bool? ?? false,
+      location: json['location'] as String? ?? '',
     );
   }
 }
@@ -34,11 +34,34 @@ class CompaniesData {
   CompaniesData({required this.data, required this.pagination});
 
   factory CompaniesData.fromJson(Map<String, dynamic> json) {
+    final dataList = json['data'];
+    if (dataList == null) {
+      return CompaniesData(
+        data: [],
+        pagination: PaginationModel.fromJson(json['pagination'] ?? {}),
+      );
+    }
+    if (dataList is! List) {
+      return CompaniesData(
+        data: [],
+        pagination: PaginationModel.fromJson(json['pagination'] ?? {}),
+      );
+    }
+
+    final companies = dataList
+        .map((item) {
+          try {
+            return CompanyModel.fromJson(item as Map<String, dynamic>);
+          } catch (e) {
+            return null;
+          }
+        })
+        .whereType<CompanyModel>()
+        .toList();
+
     return CompaniesData(
-      data: (json['data'] as List)
-          .map((item) => CompanyModel.fromJson(item))
-          .toList(),
-      pagination: PaginationModel.fromJson(json['pagination']),
+      data: companies,
+      pagination: PaginationModel.fromJson(json['pagination'] ?? {}),
     );
   }
 }
@@ -56,9 +79,9 @@ class CompaniesResponse {
 
   factory CompaniesResponse.fromJson(Map<String, dynamic> json) {
     return CompaniesResponse(
-      data: CompaniesData.fromJson(json['data']),
-      message: json['message'] as String,
-      status: json['status'] as bool,
+      data: CompaniesData.fromJson(json['data'] ?? {}),
+      message: json['message'] as String? ?? '',
+      status: json['status'] as bool? ?? false,
     );
   }
 }

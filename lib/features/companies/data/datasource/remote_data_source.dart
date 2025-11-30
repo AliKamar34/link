@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:link_task/core/errors/exceptions.dart';
 import 'package:link_task/core/networking/api_end_points.dart';
@@ -98,12 +99,27 @@ class CompaniesRemoteDataSourceImpl implements CompaniesRemoteDataSource {
 
       formData.fields.add(MapEntry('page', page.toString()));
 
+      log('Requesting page: $page');
+
       final response = await _dioHelper.postRequest(
         endPoint: ApiEndPoints.filterCompanies,
         data: formData,
       );
 
+      log('Response data: ${response.data}');
+      if (response.data == null) {
+        throw ServerException('لا توجد بيانات في الاستجابة');
+      }
+      if (response.data is! Map<String, dynamic>) {
+        throw ServerException('تنسيق البيانات غير صحيح');
+      }
+
       final companiesResponse = CompaniesResponse.fromJson(response.data);
+
+      log('Companies count: ${companiesResponse.data.data.length}');
+      log('Current page: ${companiesResponse.data.pagination.currentPage}');
+      log('Last page: ${companiesResponse.data.pagination.lastPage}');
+
       if (companiesResponse.status) {
         return companiesResponse;
       } else {
@@ -111,8 +127,9 @@ class CompaniesRemoteDataSourceImpl implements CompaniesRemoteDataSource {
       }
     } on ServerException {
       rethrow;
-    } catch (e) {
-      throw ServerException('حدث خطأ غير متوقع');
+    } catch (e, stackTrace) {
+      log('Error in filterCompanies: $e', error: e, stackTrace: stackTrace);
+      throw ServerException('حدث خطأ غير متوقع: ${e.toString()}');
     }
   }
 }
